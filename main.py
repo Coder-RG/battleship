@@ -32,7 +32,8 @@ def ui():
 
 # Display the map
 
-def map():
+def grid(lst):
+    print("\nThis is how the 10*10 grid looks\n")
     print("   0 1 2 3 4 5 6 7 8 9\n")
     for index, x in enumerate(lst):
         print(str(index), " ".join(map(str, x)), sep="  ")
@@ -42,18 +43,27 @@ def map():
 # Player interaction
 
 def player():
+    list_ships = ["Carrier", "Battleship", "Destroyer", "Submarine", "Patrol Boat"]
     print("-------------Let's begin then-------------------\n")
     print("This is how the 10*10 grid looks\n")
-    lst = [[0]*10]*10
+    lst = []
+    for x in range(10):
+        lst.append([0,0,0,0,0,0,0,0,0,0])
     print("   0 1 2 3 4 5 6 7 8 9\n")
     for index, x in enumerate(lst):
         print(str(index), " ".join(map(str, x)), sep="  ")
 
     print("\nNow it is you turn to play:\n")
-    while(True):
-        r = int(input("Choose a value between 0-9 to choose the row:"))
-        c = int(input("Choose a value between 0-9 to choose a column:"))
+    for ship in list_ships:
+        print(f"Let's place {ship}:\n")
+        while(True):
+            r = int(input("Choose a value between 0-9 to choose the row:"))
+            c = int(input("Choose a value between 0-9 to choose a column:"))
+            o = input("Place horizontal(h) or vertical(v)?")
+            lst[r][c] = 1
+            break
         break
+        grid(lst)
     return 0
 
 if __name__ == '__main__':
