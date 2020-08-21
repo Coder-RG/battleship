@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 class Ships:
     def __init__(self, name, size):
         self.name = name

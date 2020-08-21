@@ -2,6 +2,8 @@
 
 from random import randint, choice
 from ships import *
+import sys
+from time import sleep
 
 #Text to help the player with the how-to of the game
 
@@ -42,7 +44,7 @@ def ui():
 def show_grid(lst):
     """Shows the grid on the screen"""
 
-    print("\nThis is how the 10*10 grid looks\n")
+    print("\nPlacement of the ships\n")
     print("   0 1 2 3 4 5 6 7 8 9\n")
     for index, x in enumerate(lst):
         print(str(index), " ".join(map(str, x)), sep="  ")
@@ -71,7 +73,7 @@ def load_grid():
 
 # Player Interaction
 
-def player():
+def player(show):
     """UI for the input from the player for the co-ordinates of the ships"""
 
     print("-------------Let's begin then-------------------\n")
@@ -82,7 +84,7 @@ def player():
     p = Player(input("Enter your name:"))
     print("\nTry not to place the ships on the same place\n")
     for ship, size in list_ships:
-        print(f"Let's place {ship} of size: {size}\n")
+        print(f"\nLet's place {ship} of size: {size}\n")
         s = Ships(ship, size)
         ship_placed = False
         while not ship_placed:
@@ -111,17 +113,19 @@ def player():
             else:
                 print("Enter h or v for horizontal or vertical")
         p.dict_ships[ship] = s
-    show_grid(lst)
+    if show == 1:
+        show_grid(lst)
     return p
 
 # Generating values for computer ships
 
-def comp():
+def comp(name, show):
     """Generates coordinates for the computer's ships"""
 
-    print("\nWait for the Computer to place it's ships\n")
+    print(f"\nWaiting for {name} to place their ships\n")
+    sleep(1)
     lst = load_grid()
-    p = Player("Computer")
+    p = Player(name)
     for ship, size in list_ships:
         s = Ships(ship, size)
         ship_placed = False
@@ -149,11 +153,65 @@ def comp():
                 else:
                     continue
         p.dict_ships[ship] = s
-    show_grid(lst)
+    if show == 1:
+        show_grid(lst)
+    sleep(1)
     return p
+
+# Playing the game
+
+def game(p1, p2):
+    """This is where the actual gameplay resides"""
+    win = False
+    damage1 = 0
+    damage2 = 0
+    print("\nNow that both the players have their ships positioned, let's battle!\n")
+    while not win:
+        # Player1 or the human
+        # x,y = map(int, input("Enter x,y coordinates").split())
+        # if x in range(10) and y in range(10):
+        #     if (x,y) in p2.ship_coordinates:
+        #         print("Well done, That's a hit!")
+        #         p2.ship_coordinates.remove((x,y))
+        #     else:
+        #         print("That was a miss. Better luch next time.")
+        x,y = randint(0,9), randint(0,9)
+        if (x,y) in p2.ship_coordinates:
+            # print("Hit! Your damaged opponent's ship.")
+            damage1 += 1
+            p2.ship_coordinates.remove((x,y))
+        else:
+            # print("Miss! Better luck next time.")
+            pass
+        u,v = randint(0,9), randint(0,9)
+        if (u,v) in p1.ship_coordinates:
+            # print("Computer hit. Your ship was damaged.")
+            damage2 += 1
+            p1.ship_coordinates.remove((u,v))
+        else:
+            # print("Miss! Your ship didn't get damaged.")
+            pass
+        if not p1.ship_coordinates:
+            print(f"{p2.player_name} won!")
+            break
+        elif not p2.ship_coordinates:
+            print(f"{p1.player_name} won!")
+            break
+    return damage1, damage2
+
 
 # Call the necessary functions
 
 if __name__ == '__main__':
-    # play = player()
-    comp = comp()
+    if len(sys.argv) <= 4:
+        if len(sys.argv) > 1:
+            show, p1, p2 = sys.argv[1:]
+        else:
+            show, p1, p2 = 0, "Player1", "Player2"
+    else:
+        raise Exception("The max allowed number of arguments is 3")
+    player1 = comp(p1, int(show))
+    player2 = comp(p2, int(show))
+    hits = game(player1, player2)
+    sleep(1)
+    print(f"\n{player1.player_name} hit {hits[0]} and {player2.player_name} hit {hits[1]}")
